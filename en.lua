@@ -1,80 +1,67 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+local ScreenGui = Instance.new("ScreenGui")
+local MainFrame = Instance.new("Frame")
+local Title = Instance.new("TextLabel")
+local RuButton = Instance.new("TextButton")
+local EnButton = Instance.new("TextButton")
+local MainCorner = Instance.new("UICorner")
+local RuCorner = Instance.new("UICorner")
+local EnCorner = Instance.new("UICorner")
 
-local Window = Rayfield:CreateWindow({
-    Name = "Make a Sled and Ride Down the Hill",
-    LoadingTitle = "Loading...",
-    LoadingSubtitle = "by Flor1x",
-    ConfigurationSaving = { Enabled = false },
-    KeySystem = false
-})
+ScreenGui.Name = "LanguageSelector"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-local Tab = Window:CreateTab("Main", 4483362458)
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+MainFrame.Position = UDim2.new(0.5, -125, 0.5, -80)
+MainFrame.Size = UDim2.new(0, 250, 0, 160)
+MainCorner.CornerRadius = UDim.new(0, 8)
+MainCorner.Parent = MainFrame
 
-local autoFarmWins = false
-local autoFarmForward = false
+Title.Name = "Title"
+Title.Parent = MainFrame
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0, 0, 0, 15)
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "Select Language / Выберите язык"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 14
 
-Tab:CreateToggle({
-    Name = "Auto Farm Wins",
-    CurrentValue = false,
-    Flag = "FarmWins",
-    Callback = function(Value)
-        autoFarmWins = Value
-        task.spawn(function()
-            while autoFarmWins do
-                local char = game.Players.LocalPlayer.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    char.HumanoidRootPart.CFrame = CFrame.new(-1159.79, 25.38, -15070.76)
-                end
-                task.wait(2)
-            end
-        end)
-    end,
-})
+RuButton.Name = "RuButton"
+RuButton.Parent = MainFrame
+RuButton.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+RuButton.Position = UDim2.new(0.1, 0, 0.4, 0)
+RuButton.Size = UDim2.new(0.8, 0, 0, 35)
+RuButton.Font = Enum.Font.GothamSemibold
+RuButton.Text = "Русский 🇷🇺"
+RuButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+RuButton.TextSize = 14
+RuCorner.CornerRadius = UDim.new(0, 6)
+RuCorner.Parent = RuButton
 
-Tab:CreateToggle({
-    Name = "Auto Farm Cash",
-    CurrentValue = false,
-    Flag = "FarmForward",
-    Callback = function(Value)
-        autoFarmForward = Value
-        task.spawn(function()
-            while autoFarmForward do
-                local char = game.Players.LocalPlayer.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    local hrp = char.HumanoidRootPart
-                    hrp.CFrame = hrp.CFrame + (hrp.CFrame.LookVector * 100000000000000)
-                end
-                task.wait(2)
-            end
-        end)
-    end,
-})
+EnButton.Name = "EnButton"
+EnButton.Parent = MainFrame
+EnButton.BackgroundColor3 = Color3.fromRGB(45, 45, 52)
+EnButton.Position = UDim2.new(0.1, 0, 0.7, 0)
+EnButton.Size = UDim2.new(0.8, 0, 0, 35)
+EnButton.Font = Enum.Font.GothamSemibold
+EnButton.Text = "English 🇬🇧"
+EnButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+EnButton.TextSize = 14
+EnCorner.CornerRadius = UDim.new(0, 6)
+EnCorner.Parent = EnButton
 
-Tab:CreateButton({
-    Name = "Remove Damage Parts",
-    Callback = function()
-        local deletedCount = 0
+local function loadScript(url)
+    ScreenGui:Destroy()
+    loadstring(game:HttpGet(url))()
+end
 
-        for _, obj in pairs(workspace:GetDescendants()) do
-            if obj:IsA("BasePart") or obj:IsA("Model") then
-                local name = obj.Name:lower()
-                if name:find("kill") or name:find("damage") or name:find("spike") or name:find("lava") or name == "water" then
-                    obj:Destroy()
-                    deletedCount = deletedCount + 1
-                end
-            elseif obj:IsA("TouchTransmitter") then
-                if obj.Parent and (obj.Parent.Name:lower():find("kill") or obj.Parent.Name:lower():find("damage")) then
-                    obj.Parent:Destroy()
-                    deletedCount = deletedCount + 1
-                end
-            end
-        end
+RuButton.MouseButton1Click:Connect(function()
+    loadScript('https://raw.githubusercontent.com/danyachikish-boop/Make-a-Sled-and-Ride-Down-the-Hill/refs/heads/main/ru.lua')
+end)
 
-        Rayfield:Notify({
-            Title = "Success :)",
-            Content = "Removed hazard objects: " .. tostring(deletedCount),
-            Duration = 3,
-            Image = 4483362458,
-        })
-    end,
-})
+EnButton.MouseButton1Click:Connect(function()
+    loadScript('https://raw.githubusercontent.com/danyachikish-boop/Make-a-Sled-and-Ride-Down-the-Hill/refs/heads/main/en.lua')
+end)
