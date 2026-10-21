@@ -1,86 +1,63 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+--// НАСТРОЙКА
+local ONLY_ICE = true   -- true = сносить только лёд, false = сносить все опасные объекты
 
-local Window = Rayfield:CreateWindow({
-    Name = "Make a Sled and Ride Down the Hill",
-    LoadingTitle = "Loading...",
-    LoadingSubtitle = "by Flor1x",
-    ConfigurationSaving = { Enabled = false },
-    KeySystem = false
-})
+local ICE_KEYWORDS = {
+    "ice", "frozen", "slippery", "slip",
+    "лёд", "лед", "ледян", "гололёд", "гололед", "наледь", "айс"
+}
 
-local Tab = Window:CreateTab("Main", 4483362458)
+local HAZARD_KEYWORDS = {
+    "kill", "damage", "spike", "lava", "hazard", "death", "trap", "hurt", "void", "poison", "burn", "fire",
+    "урон", "убий", "шип", "лава", "опасн", "смерт", "ловушк", "вред", "яд", "огонь"
+}
 
-local autoFarmWins = false
-local autoFarmForward = false
+local function nameMatches(name, list)
+    local n = name:lower()
+    for _, kw in ipairs(list) do
+        if n:find(kw, 1, true) then return true end   -- plain find, без паттернов
+    end
+    return false
+end
 
-Tab:CreateToggle({
-    Name = "Auto-Farm Wins",
-    CurrentValue = false,
-    Flag = "FarmWins",
-    Callback = function(Value)
-        autoFarmWins = Value
-        task.spawn(function()
-            while autoFarmWins do
-                local char = game.Players.LocalPlayer.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    char.HumanoidRootPart.CFrame = CFrame.new(-1159.79, 25.38, -15070.76)
-                end
-                task.wait(2)
-            end
-        end)
-    end,
-})
-
-Tab:CreateToggle({
-    Name = "Auto-Farm Money",
-    CurrentValue = false,
-    Flag = "FarmForward",
-    Callback = function(Value)
-        autoFarmForward = Value
-        task.spawn(function()
-            while autoFarmForward do
-                local char = game.Players.LocalPlayer.Character
-                if char and char:FindFirstChild("HumanoidRootPart") then
-                    local hrp = char.HumanoidRootPart
-                    hrp.CFrame = hrp.CFrame + (hrp.CFrame.LookVector * 100000000000000)
-                end
-                task.wait(2)
-            end
-        end)
-    end,
-})
+local function isTarget(inst)
+    if not inst or not inst.Name then return false end
+    if nameMatches(inst.Name, ICE_KEYWORDS) then return true end
+    if not ONLY_ICE and nameMatches(inst.Name, HAZARD_KEYWORDS) then return true end
+    return false
+end
 
 Tab:CreateButton({
-    Name = "Ice Deals No Damage",
+    Name = ONLY_ICE and "Ice Deals No Damage" or "Remove All Hazards",
     Callback = function()
-        local deletedCount = 0
+        local removed, names = 0, {}
 
-        for _, obj in pairs(workspace:GetDescendants()) do
-            if obj:IsA("BasePart") or obj:IsA("Model") then
-                local name = obj.Name:lower()
-                if name:find("kill") or name:find("damage") or name:find("spike") or name:find("lava") or name == "water" or name:find("ice") or name:find("hazard") then
-                    obj:Destroy()
-                    deletedCount = deletedCount + 1
-                end
-            elseif obj:IsA("TouchTransmitter") then
-                local parent = obj.Parent
-                if parent then
-                    local pname = parent.Name:lower()
-                    if pname:find("kill") or pname:find("damage") or pname:find("spike") or pname:find("lava") or pname:find("ice") then
-                        parent:Destroy()
-                        deletedCount = deletedCount + 1
-                    else
-                        obj:Destroy()
-                        deletedCount = deletedCount + 1
-                    end
+        -- проверяем сам объект и его родителя (часто это Model/Folder "Лёд", "Ice1" и т.п.)
+        local function targetOf(part)
+            if isTarget(part) then return part end
+            local parent = part.Parent
+            if parent and parent ~= workspace and isTarget(parent) then return parent end
+            return nil
+        end
+
+        local seen = {}
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("BasePart") then
+                local target = targetOf(obj)
+                if target and not seen[target] then
+                    seen[target] = true
+                    removed += 1
+                    if #names < 8 then table.insert(names, target.Name) end
+                    target:Destroy()
                 end
             end
         end
 
         Rayfield:Notify({
-            Title = "Success :)",
-            Content = "Damage objects removed: " .. tostring(deletedCount),
-            Duration = 3,
+            Title = removed > 0 and "Success :)" or "Nothing Found",
+            Content = removed > 0
+                and ("Removed: " .. removed .. " (" .. table.concat(names, ", ") .. ")")
+                or "Ничего не найдено — проверь список ключевых слов",
+            Duration = 4,
             Image = 4483362458,
         })
     end,
