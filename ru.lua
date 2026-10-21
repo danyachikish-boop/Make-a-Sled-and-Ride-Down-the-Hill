@@ -1,20 +1,20 @@
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+=local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
     Name = "Make a Sled and Ride Down the Hill",
-    LoadingTitle = "Загрузка...",
+    LoadingTitle = "Loading...",
     LoadingSubtitle = "by Flor1x",
     ConfigurationSaving = { Enabled = false },
     KeySystem = false
 })
 
-local Tab = Window:CreateTab("Основное", 4483362458)
+local Tab = Window:CreateTab("Main", 4483362458)
 
 local autoFarmWins = false
 local autoFarmForward = false
 
 Tab:CreateToggle({
-    Name = "Авто-фарм побед",
+    Name = "Auto-Farm Wins",
     CurrentValue = false,
     Flag = "FarmWins",
     Callback = function(Value)
@@ -32,7 +32,7 @@ Tab:CreateToggle({
 })
 
 Tab:CreateToggle({
-    Name = "Авто-фарм денег",
+    Name = "Auto-Farm Money",
     CurrentValue = false,
     Flag = "FarmForward",
     Callback = function(Value)
@@ -51,14 +51,14 @@ Tab:CreateToggle({
 })
 
 Tab:CreateButton({
-    Name = "лед не наносит урон",
+    Name = "Ice Deals No Damage",
     Callback = function()
         local deletedCount = 0
 
         for _, obj in pairs(workspace:GetDescendants()) do
             if obj:IsA("BasePart") or obj:IsA("Model") then
                 local name = obj.Name:lower()
-                if name:find("kill") or name:find("damage") or name:find("spike") or name:find("lava") or name == "water" or name:find("лед") or name:find("вода") or name:find("hazard") then
+                if name:find("kill") or name:find("damage") or name:find("spike") or name:find("lava") or name == "water" or name:find("ice") or name:find("hazard") then
                     obj:Destroy()
                     deletedCount = deletedCount + 1
                 end
@@ -66,7 +66,7 @@ Tab:CreateButton({
                 local parent = obj.Parent
                 if parent then
                     local pname = parent.Name:lower()
-                    if pname:find("kill") or pname:find("damage") or pname:find("spike") or pname:find("lava") or pname:find("лед") or pname:find("вода") then
+                    if pname:find("kill") or pname:find("damage") or pname:find("spike") or pname:find("lava") or pname:find("ice") then
                         parent:Destroy()
                         deletedCount = deletedCount + 1
                     else
@@ -78,8 +78,8 @@ Tab:CreateButton({
         end
 
         Rayfield:Notify({
-            Title = "Успешно :)",
-            Content = "Удалено объектов урона: " .. tostring(deletedCount),
+            Title = "Success :)",
+            Content = "Damage objects removed: " .. tostring(deletedCount),
             Duration = 3,
             Image = 4483362458,
         })
