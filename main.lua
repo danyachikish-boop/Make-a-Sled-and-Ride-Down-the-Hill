@@ -6,7 +6,7 @@ local DESTROY_AFTER_LOAD = true   -- удалить селектор после 
 local DESTROY_DELAY      = 0.7    -- задержка перед удалением (сек)
 
 local URL_RU = "https://raw.githubusercontent.com/danyachikish-boop/Make-a-Sled-and-Ride-Down-the-Hill/refs/heads/main/ru.lua"
-local URL_EN = "https://raw.githubusercontent.com/danyachikish-boop/Make-a-Sled-and-Ride-Down-the-Hill/refs/heads/main/en.lua"
+local URL_EN = "https://pastebin.com/raw/degTPAGA"
 --// ======================
 
 --// Родитель GUI (совместимость с экзекьюторами)
